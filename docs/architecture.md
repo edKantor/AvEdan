@@ -68,16 +68,29 @@ CMake, selected via two cache variables set at configure time:
 - `AVEDAN_BOARD` — a directory name under `bsp/boards/` (currently `nucleo_f4` or
   `nrf52_dk`, both placeholders pending a chosen chip variant)
 
+`CMakePresets.json` wires these up per OS/family, and is the recommended way to build:
+
 ```
-cmake -B build -DAVEDAN_MCU_FAMILY=stm32 -DAVEDAN_BOARD=nucleo_f4 \
-      -DCMAKE_TOOLCHAIN_FILE=cmake/toolchains/stm32.cmake
+cmake --preset nrf-macos      # or nrf-linux, nrf-windows, stm32-macos, stm32-linux, stm32-windows
+cmake --build --preset nrf-macos
 ```
 
-`cmake/toolchains/nrf.cmake` uses the Zephyr SDK GCC (`arm-zephyr-eabi-*`) bundled by
-Nordic's nRF Connect SDK toolchain manager, not a plain `arm-none-eabi-gcc`. It defaults
-to the NCS toolchain bundle installed on the reference machine; override the path with
-`-DNRF_TOOLCHAIN_ROOT=<path>` or the `NRF_TOOLCHAIN_ROOT` environment variable on any
-other machine or in CI.
+Both `cmake/toolchains/*.cmake` files locate their compiler with `find_program`
+(PATH search, aware of `.exe` on Windows), so the same toolchain files and presets work
+unmodified across macOS, Linux, and Windows — no OS-specific branches needed in the
+CMake logic itself, only in which path (if any) a preset supplies as a hint.
+
+- `cmake/toolchains/nrf.cmake` looks for `arm-zephyr-eabi-*` — the Zephyr SDK GCC bundled
+  by Nordic's nRF Connect SDK toolchain manager, not a plain `arm-none-eabi-gcc`. If it
+  isn't on PATH, point it at the toolchain root (the directory containing
+  `bin/arm-zephyr-eabi-gcc`) via `-DNRF_TOOLCHAIN_ROOT=<path>` or the
+  `NRF_TOOLCHAIN_ROOT` environment variable.
+- `cmake/toolchains/stm32.cmake` looks for `arm-none-eabi-*` (the ARM GNU Toolchain).
+  Same override mechanism via `STM32_TOOLCHAIN_ROOT`.
+- The `nrf-macos`/`stm32-macos` presets already supply the paths verified on the
+  reference Mac. The Linux/Windows presets exist but have no verified default path yet —
+  set the `*_TOOLCHAIN_ROOT` env var (or put the compiler on PATH) before configuring
+  with them.
 
 ## Status
 

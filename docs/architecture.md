@@ -73,6 +73,12 @@ cmake -B build -DAVEDAN_MCU_FAMILY=stm32 -DAVEDAN_BOARD=nucleo_f4 \
       -DCMAKE_TOOLCHAIN_FILE=cmake/toolchains/stm32.cmake
 ```
 
+`cmake/toolchains/nrf.cmake` uses the Zephyr SDK GCC (`arm-zephyr-eabi-*`) bundled by
+Nordic's nRF Connect SDK toolchain manager, not a plain `arm-none-eabi-gcc`. It defaults
+to the NCS toolchain bundle installed on the reference machine; override the path with
+`-DNRF_TOOLCHAIN_ROOT=<path>` or the `NRF_TOOLCHAIN_ROOT` environment variable on any
+other machine or in CI.
+
 ## Status
 
 This is an initial scaffold: HAL interfaces are defined, but `mcu/`, `bsp/`, and

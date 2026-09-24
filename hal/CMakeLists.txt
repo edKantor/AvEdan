@@ -1,0 +1,2 @@
+add_library(avedan_hal INTERFACE)
+target_include_directories(avedan_hal INTERFACE include)

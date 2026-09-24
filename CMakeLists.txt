@@ -15,6 +15,14 @@ set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 
+# Bare-metal target: no runtime to unwind against, so exceptions/RTTI are
+# disabled rather than paying for unwind tables and pulling in libstdc++'s
+# exception machinery (which also needs __exidx_start/__exidx_end symbols
+# a plain (no linker script yet) link can't provide).
+add_compile_options(
+    $<$<COMPILE_LANGUAGE:CXX>:-fno-exceptions>
+    $<$<COMPILE_LANGUAGE:CXX>:-fno-rtti>)
+
 add_subdirectory(hal)
 add_subdirectory(mcu/${AVEDAN_MCU_FAMILY})
 add_subdirectory(bsp)

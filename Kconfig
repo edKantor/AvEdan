@@ -1,0 +1,3 @@
+# AvEdan platform module. No options of its own yet — this sources each
+# driver subsystem's Kconfig as they're added under drivers/.
+rsource "drivers/Kconfig"
